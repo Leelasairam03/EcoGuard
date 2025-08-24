@@ -1,0 +1,11 @@
+# Copy this content to your .env file or set as environment variable
+
+# Gemini AI Configuration
+GEMINI_API_KEY=your-actual-api-key-here
+
+# Flask Configuration  
+FLASK_DEBUG=True
+SECRET_KEY=dev-secret-key-change-in-production
+
+# Analysis Settings
+ANALYSIS_CONFIDENCE_THRESHOLD=0.7 

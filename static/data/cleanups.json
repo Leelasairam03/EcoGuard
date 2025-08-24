@@ -1,0 +1,200 @@
+[
+  {
+    "report_id": "cleanup_20250823_233316_4407",
+    "pollution_report": {
+      "filename": "sai_polluted.jpg",
+      "latitude": "12.865798484457718",
+      "longitude": "74.92437656172422",
+      "location_name": "Mangalore Coastal Area",
+      "score": 85,
+      "analysis": "The beach depicted in the image exhibits severe pollution.  The density of waste is extremely high, covering a significant portion of the visible shoreline.  The waste is concentrated primarily in the upper intertidal zone, indicating recent deposition. The pollution is not evenly distributed; it\u2019s clumped in areas with higher concentrations and sparser in others. This suggests varied sources and/or tidal influences on the distribution. The environmental impact is substantial, negatively affecting the aesthetic value of the beach, posing risks to wildlife (entanglement, ingestion of plastics), and potentially harming water quality through leaching of toxins and breakdown of organic materials.  Cleanup would require significant resources and effort.  The amount of plastic debris suggests a serious problem with plastic waste management in the surrounding area.",
+      "reporter_name": "sai",
+      "reporter_email": "qwe@gmail.com",
+      "points": 20,
+      "timestamp": "2025-08-23T23:33:16.404175"
+    },
+    "status": "cleaned",
+    "assigned_team": "team_20250823_234051_9337",
+    "assigned_date": "2025-08-23T23:41:16.503025",
+    "start_date": null,
+    "completion_date": "2025-08-23T23:57:11.799186",
+    "cleanup_notes": "ijjnkj",
+    "verification_photos": [
+      "verification_cleanup_20250823_233316_4407_clean.jpg"
+    ],
+    "cleanup_points": 0,
+    "created_at": "2025-08-23T23:33:16.409279",
+    "updated_at": "2025-08-23T23:57:11.799186",
+    "verification_analysis": [
+      {
+        "score": 10,
+        "analysis": "The image shows a pristine beach with clear water and clean sand.  There is no visible pollution, waste, or debris on the sand or in the water. The beach appears exceptionally clean.",
+        "cleanup_quality": "excellent",
+        "remaining_pollution": "No pollution or waste is visible in the provided image.",
+        "recommendations": "No further action is needed based on this image.  Regular monitoring for future pollution is recommended."
+      }
+    ],
+    "cleanup_score": 10.0
+  },
+  {
+    "report_id": "cleanup_20250823_235714_4517",
+    "pollution_report": {
+      "filename": "sai_polluted.jpg",
+      "latitude": "12.865838491198184",
+      "longitude": "74.92439847700172",
+      "location_name": "Mangalore Coastal Area",
+      "score": 85,
+      "analysis": "The beach depicted in the image exhibits severe pollution.  The waste is densely concentrated along a significant portion of the shoreline visible.  The density is high enough to be considered a substantial accumulation of refuse.  The distribution is relatively even along the stretch of beach shown, suggesting a consistent source of pollution. The environmental impact is substantial.  The large amount of plastic debris is a serious threat to marine wildlife through ingestion and entanglement.  The organic waste, while present, is less concerning in comparison to the volume of plastics.  Decomposition of the organic matter may affect water quality temporarily, but the long-term consequences of plastic pollution are much greater and far-reaching. The image suggests potential harm to the beach's aesthetic value and its recreational use, impacting tourism and local economies. Cleanup requires a significant effort involving heavy machinery and possibly a large team of volunteers. The current state indicates a likely need for ongoing monitoring and preventative measures.",
+      "reporter_name": "sai",
+      "reporter_email": "qwe@gmail.com",
+      "points": 20,
+      "timestamp": "2025-08-23T23:57:14.495405"
+    },
+    "status": "cleaned",
+    "assigned_team": "team_20250823_234051_9337",
+    "assigned_date": "2025-08-23T23:57:14.534751",
+    "start_date": null,
+    "completion_date": "2025-08-24T00:00:46.005579",
+    "cleanup_notes": "dfdsbzdg",
+    "verification_photos": [
+      "verification_cleanup_20250823_235714_4517_clean.jpg"
+    ],
+    "cleanup_points": 0,
+    "created_at": "2025-08-23T23:57:14.503644",
+    "updated_at": "2025-08-24T00:00:46.005579",
+    "verification_analysis": [
+      {
+        "score": 10,
+        "analysis": "The image shows a pristine beach with no visible pollution, waste, or debris. The sand is clean, and the water appears clear. There is no indication of any recent or past pollution events.",
+        "cleanup_quality": "excellent",
+        "remaining_pollution": "None detected. The beach appears exceptionally clean.",
+        "recommendations": "No further action is needed based on this image.  Continue regular beach monitoring to ensure cleanliness is maintained."
+      }
+    ],
+    "cleanup_score": 10.0
+  },
+  {
+    "report_id": "cleanup_20250823_235714_7279",
+    "pollution_report": {
+      "filename": "sai_polluted.jpg",
+      "latitude": "12.865838491198184",
+      "longitude": "74.92439847700172",
+      "location_name": "Mangalore Coastal Area",
+      "score": 85,
+      "analysis": "The beach depicted in the image exhibits severe pollution.  The density of waste is extremely high, covering a significant portion of the visible shoreline.  The waste is concentrated primarily in the upper intertidal zone, where the waves deposit debris. The distribution is relatively even across the visible area, indicating a consistent and possibly ongoing problem.  The environmental impact is substantial.  Plastic debris is a major threat to marine life through ingestion and entanglement.  The decomposition of organic waste can deplete oxygen levels in the water, harming aquatic ecosystems.  The overall aesthetic impact is significant, rendering the beach unusable for recreation and potentially harming tourism.  There is a risk of microplastics entering the food chain.",
+      "reporter_name": "sai",
+      "reporter_email": "qwe@gmail.com",
+      "points": 20,
+      "timestamp": "2025-08-23T23:57:14.913400"
+    },
+    "status": "cleaned",
+    "assigned_team": "team_20250823_235910_3075",
+    "assigned_date": "2025-08-23T23:59:44.845843",
+    "start_date": null,
+    "completion_date": "2025-08-24T00:02:15.300465",
+    "cleanup_notes": "zzc bvx",
+    "verification_photos": [
+      "verification_cleanup_20250823_235714_7279_clean.jpg"
+    ],
+    "cleanup_points": 0,
+    "created_at": "2025-08-23T23:57:14.920726",
+    "updated_at": "2025-08-24T00:02:15.300465",
+    "verification_analysis": [
+      {
+        "score": 10,
+        "analysis": "The provided image shows a pristine beach with clear water and clean sand. There is no visible pollution, waste, or debris present on the beach or in the water. The sand appears undisturbed, and the water is clear and free of any noticeable contaminants.  The overall appearance suggests an excellent level of cleanliness.",
+        "cleanup_quality": "excellent",
+        "remaining_pollution": "No pollution or debris is visible in the image.",
+        "recommendations": "No further cleanup action is needed based on this image.  Regular monitoring for future pollution is recommended."
+      }
+    ],
+    "cleanup_score": 10.0
+  },
+  {
+    "report_id": "cleanup_20250823_235715_8532",
+    "pollution_report": {
+      "filename": "sai_polluted.jpg",
+      "latitude": "12.865838491198184",
+      "longitude": "74.92439847700172",
+      "location_name": "Mangalore Coastal Area",
+      "score": 85,
+      "analysis": "The beach depicted in the image exhibits severe pollution.  The density of waste is extremely high, covering a significant portion of the visible shoreline.  The waste is densely packed and appears to have accumulated over a considerable period.  The distribution is uneven, with some areas more heavily impacted than others, but overall, the pollution is widespread.  The environmental impact is substantial.  Plastic debris, particularly plastic bottles and packaging, is prevalent, posing a significant threat to marine life through ingestion and entanglement.  The accumulation of waste could also affect the aesthetic appeal of the beach, impacting tourism and recreational activities.  Decomposition of organic waste could lead to unpleasant odors and contribute to the spread of disease.  The accumulation of debris can also disrupt natural coastal processes.",
+      "reporter_name": "sai",
+      "reporter_email": "qwe@gmail.com",
+      "points": 20,
+      "timestamp": "2025-08-23T23:57:15.190230"
+    },
+    "status": "cleaned",
+    "assigned_team": "team_20250823_235910_3075",
+    "assigned_date": "2025-08-24T00:02:35.558388",
+    "start_date": null,
+    "completion_date": "2025-08-24T00:03:12.801140",
+    "cleanup_notes": "gnc",
+    "verification_photos": [
+      "verification_cleanup_20250823_235715_8532_clean.jpg"
+    ],
+    "cleanup_points": 0,
+    "created_at": "2025-08-23T23:57:15.202732",
+    "updated_at": "2025-08-24T00:03:12.801140",
+    "verification_analysis": [
+      {
+        "score": 10,
+        "analysis": "The image shows a pristine beach with clean sand and clear water.  There is no visible pollution, waste, or debris present on the beach or in the water. The waves are clear and there are no signs of oil slicks or other pollutants. The overall appearance suggests a very recent and thorough cleanup.",
+        "cleanup_quality": "excellent",
+        "remaining_pollution": "No visible pollution or waste.",
+        "recommendations": "No further action is required.  Regular monitoring to ensure the beach remains clean is recommended."
+      }
+    ],
+    "cleanup_score": 10.0
+  },
+  {
+    "report_id": "cleanup_20250823_235726_5146",
+    "pollution_report": {
+      "filename": "sai_polluted.jpg",
+      "latitude": "12.86578509162425",
+      "longitude": "74.9243804340583",
+      "location_name": "Mangalore Coastal Area",
+      "score": 85,
+      "analysis": "The beach depicted in the image exhibits severe pollution.  The density of waste is extremely high, covering a significant portion of the visible shoreline.  The waste is concentrated in a band along the high-tide line, suggesting it has been deposited by the ocean. The distribution is relatively even across the visible area, indicating a consistent and substantial influx of pollution.  The environmental impact is significant. This level of plastic pollution poses a serious threat to marine life through entanglement, ingestion, and habitat destruction. The accumulation of debris can also negatively impact the aesthetic value of the beach, impacting tourism and recreational activities.  The potential for water contamination is also high, affecting water quality and potentially harming both marine and human health.",
+      "reporter_name": "sai",
+      "reporter_email": "qwe@gmail.com",
+      "points": 20,
+      "timestamp": "2025-08-23T23:57:26.450823"
+    },
+    "status": "in_progress",
+    "assigned_team": "team_20250823_234051_9337",
+    "assigned_date": "2025-08-24T00:02:41.058392",
+    "start_date": null,
+    "completion_date": null,
+    "cleanup_notes": "",
+    "verification_photos": [],
+    "cleanup_points": 0,
+    "created_at": "2025-08-23T23:57:26.460204",
+    "updated_at": "2025-08-24T00:02:41.058392"
+  },
+  {
+    "report_id": "cleanup_20250823_235756_7377",
+    "pollution_report": {
+      "filename": "sai_polluted.jpg",
+      "latitude": "12.86578509162425",
+      "longitude": "74.9243804340583",
+      "location_name": "Mangalore Coastal Area",
+      "score": 85,
+      "analysis": "The beach depicted in the image exhibits severe pollution.  The waste is densely concentrated along the shoreline, forming a thick layer of debris extending as far as the eye can see in the photograph. The pollution is primarily composed of plastic items, including numerous bottles, bottle caps, wrappers, food containers, and bags.  There is a significant amount of fragmented plastic pieces too small to identify specifically.  A lesser but still substantial quantity of organic waste (seaweed and possibly some driftwood) is mixed in with the plastic.  Industrial waste or fishing gear is not readily apparent in the visible area of the photograph.  The high density of plastic waste suggests a prolonged accumulation, potentially indicating a consistent source of pollution impacting the area.  The environmental impact is considerable, affecting the aesthetic appeal of the beach, posing a significant threat to marine life through ingestion or entanglement, and potentially impacting water quality.  The accumulation of debris could also harm the beach ecosystem's delicate balance.",
+      "reporter_name": "sai",
+      "reporter_email": "qwe@gmail.com",
+      "points": 20,
+      "timestamp": "2025-08-23T23:57:56.443172"
+    },
+    "status": "pending",
+    "assigned_team": null,
+    "assigned_date": null,
+    "start_date": null,
+    "completion_date": null,
+    "cleanup_notes": "",
+    "verification_photos": [],
+    "cleanup_points": 0,
+    "created_at": "2025-08-23T23:57:56.450469",
+    "updated_at": "2025-08-23T23:57:56.450469"
+  }
+]

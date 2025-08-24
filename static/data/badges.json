@@ -1,0 +1,92 @@
+[
+  {
+    "badge_id": "first_report",
+    "name": "First Report",
+    "description": "Submitted your first pollution report",
+    "icon": "\ud83d\udcdd",
+    "points_required": 10,
+    "category": "reporter",
+    "rarity": "common"
+  },
+  {
+    "badge_id": "reporter_10",
+    "name": "Dedicated Reporter",
+    "description": "Submitted 10 pollution reports",
+    "icon": "\ud83d\udcca",
+    "points_required": 50,
+    "category": "reporter",
+    "rarity": "common"
+  },
+  {
+    "badge_id": "reporter_50",
+    "name": "Expert Reporter",
+    "description": "Submitted 50 pollution reports",
+    "icon": "\ud83c\udfc6",
+    "points_required": 150,
+    "category": "reporter",
+    "rarity": "uncommon"
+  },
+  {
+    "badge_id": "first_cleanup",
+    "name": "First Cleanup",
+    "description": "Completed your first cleanup task",
+    "icon": "\ud83e\uddf9",
+    "points_required": 25,
+    "category": "cleanup",
+    "rarity": "common"
+  },
+  {
+    "badge_id": "cleanup_10",
+    "name": "Cleanup Veteran",
+    "description": "Completed 10 cleanup tasks",
+    "icon": "\ud83c\udf1f",
+    "points_required": 100,
+    "category": "cleanup",
+    "rarity": "uncommon"
+  },
+  {
+    "badge_id": "cleanup_50",
+    "name": "Cleanup Master",
+    "description": "Completed 50 cleanup tasks",
+    "icon": "\ud83d\udc51",
+    "points_required": 300,
+    "category": "cleanup",
+    "rarity": "rare"
+  },
+  {
+    "badge_id": "high_severity",
+    "name": "Crisis Responder",
+    "description": "Reported high-severity pollution",
+    "icon": "\ud83d\udea8",
+    "points_required": 75,
+    "category": "reporter",
+    "rarity": "uncommon"
+  },
+  {
+    "badge_id": "team_leader",
+    "name": "Team Leader",
+    "description": "Led a cleanup team",
+    "icon": "\ud83d\udc65",
+    "points_required": 50,
+    "category": "cleanup",
+    "rarity": "common"
+  },
+  {
+    "badge_id": "verification",
+    "name": "Verification Expert",
+    "description": "Verified 5 cleanup tasks",
+    "icon": "\u2705",
+    "points_required": 100,
+    "category": "cleanup",
+    "rarity": "uncommon"
+  },
+  {
+    "badge_id": "environmentalist",
+    "name": "Environmentalist",
+    "description": "Earned 500 total points",
+    "icon": "\ud83c\udf0d",
+    "points_required": 500,
+    "category": "general",
+    "rarity": "epic"
+  }
+]

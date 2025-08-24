@@ -1,0 +1,100 @@
+[
+  {
+    "email": "qwe@gmail.com",
+    "badges": [
+      "first_report",
+      "first_cleanup",
+      "reporter_10",
+      "cleanup_10"
+    ],
+    "total_points": 245,
+    "reporter_points": 120,
+    "cleanup_points": 125,
+    "level": 3,
+    "title": "Ocean Defender",
+    "achievements": [
+      {
+        "type": "badge_earned",
+        "badges": [
+          "first_report"
+        ],
+        "date": "2025-08-23T23:33:16.407168"
+      },
+      {
+        "type": "badge_earned",
+        "badges": [
+          "first_cleanup"
+        ],
+        "date": "2025-08-23T23:56:56.738763"
+      },
+      {
+        "type": "badge_earned",
+        "badges": [
+          "reporter_10"
+        ],
+        "date": "2025-08-23T23:57:14.918706"
+      },
+      {
+        "type": "badge_earned",
+        "badges": [
+          "cleanup_10"
+        ],
+        "date": "2025-08-24T00:02:15.301450"
+      }
+    ],
+    "created_at": "2025-08-23T23:30:08.797856",
+    "last_updated": "2025-08-24T00:03:12.802140"
+  },
+  {
+    "email": "test@example.com",
+    "badges": [
+      "first_cleanup",
+      "cleanup_10"
+    ],
+    "total_points": 125,
+    "reporter_points": 0,
+    "cleanup_points": 125,
+    "level": 2,
+    "title": "Coastal Protector",
+    "achievements": [
+      {
+        "type": "badge_earned",
+        "badges": [
+          "first_cleanup"
+        ],
+        "date": "2025-08-23T23:56:56.768518"
+      },
+      {
+        "type": "badge_earned",
+        "badges": [
+          "cleanup_10"
+        ],
+        "date": "2025-08-24T00:02:15.339387"
+      }
+    ],
+    "created_at": "2025-08-23T23:56:56.767524",
+    "last_updated": "2025-08-24T00:03:12.848110"
+  },
+  {
+    "email": "zxcv@gmail.com",
+    "badges": [
+      "first_cleanup"
+    ],
+    "total_points": 75,
+    "reporter_points": 0,
+    "cleanup_points": 75,
+    "level": 1,
+    "title": "Beach Guardian",
+    "achievements": [
+      {
+        "type": "badge_earned",
+        "badges": [
+          "first_cleanup"
+        ],
+        "date": "2025-08-23T23:56:56.783377"
+      }
+    ],
+    "created_at": "2025-08-23T23:56:56.783377",
+    "last_updated": "2025-08-24T00:00:46.078741"
+  }
+]

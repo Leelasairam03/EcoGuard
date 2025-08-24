@@ -1,0 +1,52 @@
+[
+  {
+    "team_id": "team_20250823_234051_9337",
+    "name": "hello",
+    "leader_email": "qwe@gmail.com",
+    "members": [
+      "qwe@gmail.com",
+      "test@example.com",
+      "zxcv@gmail.com"
+    ],
+    "status": "busy",
+    "current_task": "cleanup_20250823_235726_5146",
+    "total_cleanups": 2,
+    "total_points": 0,
+    "rating": 5.0,
+    "created_at": "2025-08-23T23:40:51.379782",
+    "last_activity": "2025-08-24T00:02:41.058392"
+  },
+  {
+    "team_id": "team_20250823_235910_3075",
+    "name": "geminas geminasket",
+    "leader_email": "qwe@gmail.com",
+    "members": [
+      "qwe@gmail.com",
+      "test@example.com"
+    ],
+    "status": "available",
+    "current_task": null,
+    "total_cleanups": 2,
+    "total_points": 0,
+    "rating": 5.0,
+    "created_at": "2025-08-23T23:59:10.887409",
+    "last_activity": "2025-08-24T00:03:12.801140"
+  },
+  {
+    "team_id": "team_20250824_093659_4144",
+    "name": "tech orbit",
+    "leader_email": "qwe@gmail.com",
+    "members": [
+      "qwe@gmail.com",
+      "test@example.com",
+      "zxc@gmail.com"
+    ],
+    "status": "available",
+    "current_task": null,
+    "total_cleanups": 0,
+    "total_points": 0,
+    "rating": 5.0,
+    "created_at": "2025-08-24T09:36:59.667721",
+    "last_activity": "2025-08-24T09:36:59.667721"
+  }
+]

@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanup Reports - Beach Pollution Reporter</title>
+         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .main-container {
+            padding: 6rem 0 2rem 0;
+        }
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .page-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .page-title i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-in_progress { background: #d1ecf1; color: #0c5460; }
+        .status-cleaned { background: #d4edda; color: #155724; }
+        .status-verified { background: #cce5ff; color: #004085; }
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .btn-success-custom {
+            background: linear-gradient(45deg, #06d6a0, #1b9aaa);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .btn-success-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+        .modal-content {
+            border-radius: 15px;
+        }
+                 .modal-header {
+             background: linear-gradient(45deg, #667eea, #764ba2);
+             color: white;
+             border-radius: 15px 15px 0 0;
+         }
+         .leaflet-container {
+             z-index: 1;
+         }
+         .map-container {
+             position: relative;
+             overflow: hidden;
+         }
+         
+                 /* Enhanced Map Styling */
+        .map-wrapper {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: 3px solid #fff;
+            background: #f8f9fa;
+            min-height: 400px;
+        }
+        
+        .location-map {
+            height: 400px;
+            width: 100%;
+            background: #f8f9fa;
+            position: relative;
+        }
+        
+
+        
+        .map-overlay {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 15px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .map-info {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .map-info i {
+            font-size: 1.1rem;
+        }
+        
+        /* Custom Map Controls */
+        .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            border-radius: 10px !important;
+            overflow: hidden;
+        }
+        
+        .leaflet-control-zoom a {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #2c3e50 !important;
+            border: none !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .leaflet-control-zoom a:hover {
+            background: #667eea !important;
+            color: white !important;
+            transform: scale(1.05);
+        }
+        
+        /* Custom Marker Styling */
+        .custom-marker {
+            background: #e74c3c;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            width: 30px !important;
+            height: 30px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        /* Map Attribution Styling */
+        .leaflet-control-attribution {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #2c3e50 !important;
+            font-size: 0.8rem !important;
+            padding: 5px 10px !important;
+            border-radius: 10px !important;
+        }
+        
+        /* Custom Popup Styling */
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: 2px solid #e74c3c;
+        }
+        
+        .custom-popup .leaflet-popup-tip {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #e74c3c;
+        }
+        
+        /* Scale Control Styling */
+        .leaflet-control-scale {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            padding: 5px 10px !important;
+        }
+        
+        .leaflet-control-scale-line {
+            border: 2px solid #2c3e50 !important;
+            border-top: none !important;
+            color: #2c3e50 !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Enhanced Report Details Styling */
+        .report-details-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .report-details-section h6 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .report-details-section h6 i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .detail-value {
+            color: #6c757d;
+            text-align: right;
+        }
+        
+        .status-badge-large {
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge-large.status-pending {
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .status-badge-large.status-in_progress {
+            background: linear-gradient(45deg, #17a2b8, #20c997);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+        
+        .status-badge-large.status-cleaned {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .status-badge-large.status-verified {
+            background: linear-gradient(45deg, #007bff, #6610f2);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        .modal-xl {
+            max-width: 95%;
+        }
+        
+        .modal-body {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .modal-xl {
+                max-width: 100%;
+                margin: 0.5rem;
+            }
+            
+            .map-wrapper {
+                min-height: 300px;
+            }
+            
+            .location-map {
+                height: 300px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+            
+            .detail-value {
+                text-align: left;
+                margin-top: 0.25rem;
+            }
+        }
+         
+         /* Loading State */
+         .map-loading {
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             height: 350px;
+             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+             color: #6c757d;
+             font-size: 1.1rem;
+         }
+         
+         .map-loading i {
+             margin-right: 10px;
+             animation: spin 2s linear infinite;
+         }
+         
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
+         
+         /* Cleaned Images Styling */
+         .cleaned-image-container {
+             position: relative;
+             overflow: hidden;
+             border-radius: 10px;
+             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+             transition: transform 0.3s ease;
+         }
+         
+         .cleaned-image-container:hover {
+             transform: translateY(-2px);
+         }
+         
+         .cleaned-image {
+             width: 100%;
+             height: 150px;
+             object-fit: cover;
+             transition: transform 0.3s ease;
+         }
+         
+         .cleaned-image:hover {
+             transform: scale(1.05);
+         }
+         
+         .image-overlay {
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+             background: rgba(0,0,0,0.5);
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             opacity: 0;
+             transition: opacity 0.3s ease;
+         }
+         
+         .cleaned-image-container:hover .image-overlay {
+             opacity: 1;
+         }
+         
+         .image-overlay i {
+             color: white;
+             font-size: 1.5rem;
+         }
+         
+         /* Image Modal Styling */
+         .image-modal .modal-content {
+             background: rgba(0,0,0,0.9);
+             border: none;
+             border-radius: 15px;
+         }
+         
+         .image-modal .modal-header {
+             border-bottom: none;
+             padding: 1rem 1.5rem;
+         }
+         
+         .image-modal .modal-body {
+             padding: 0;
+             text-align: center;
+         }
+         
+         .image-modal .modal-body img {
+             max-width: 100%;
+             max-height: 80vh;
+             object-fit: contain;
+         }
+         
+         .image-modal .btn-close {
+             color: white;
+             filter: invert(1);
+         }
+     </style>
+</head>
+<body>
+    <!-- Enhanced Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-leaf me-2"></i>
+                EcoGuardian
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-chart-line me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">
+                            <i class="fas fa-plus me-1"></i>New Report
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/cleanup/cleanup-dashboard">
+                            <i class="fas fa-broom me-1"></i>Cleanup
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user_email %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>{{ user_email }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/cleanup/cleanup-dashboard">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Cleanup Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="/cleanup/create-team">
+                                    <i class="fas fa-users me-2"></i>Create Team
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/dashboard">
+                                    <i class="fas fa-chart-line me-2"></i>My Dashboard
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="content-card">
+                <h2 class="page-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    Cleanup Reports
+                </h2>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Embedded Data for JavaScript -->
+                <script id="cleanupsData" type="application/json" style="display: none;">
+                    {{ cleanups | tojson | safe }}
+                </script>
+                <script id="teamsData" type="application/json" style="display: none;">
+                    {{ teams | tojson | safe }}
+                </script>
+
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <h5 class="mb-3">
+                        <i class="fas fa-filter me-2"></i>Filter Reports
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="btn-group" role="group">
+                                <a href="/cleanup/cleanup-reports" class="btn btn-outline-primary {{ 'active' if current_filter == 'all' }}">
+                                    All Reports
+                                </a>
+                                <a href="/cleanup/cleanup-reports?status=pending" class="btn btn-outline-warning {{ 'active' if current_filter == 'pending' }}">
+                                    Pending
+                                </a>
+                                <a href="/cleanup/cleanup-reports?status=in_progress" class="btn btn-outline-info {{ 'active' if current_filter == 'in_progress' }}">
+                                    In Progress
+                                </a>
+                                <a href="/cleanup/cleanup-reports?status=cleaned" class="btn btn-outline-success {{ 'active' if current_filter == 'cleaned' }}">
+                                    Cleaned
+                                </a>
+                                
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="/cleanup/cleanup-dashboard" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                {% if cleanups %}
+                    <div class="row">
+                        {% for cleanup in cleanups %}
+                        <div class="col-12 mb-3">
+                            <div class="report-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <h6 class="mb-1">{{ cleanup.pollution_report.location_name }}</h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            {{ cleanup.pollution_report.reporter_name }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ cleanup.created_at[:10] if cleanup.created_at else 'N/A' }}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="status-badge status-{{ cleanup.status }}">
+                                            {{ cleanup.status.replace('_', ' ').title() }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <strong>Score:</strong> {{ cleanup.pollution_report.score }}/100
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-star me-1"></i>
+                                            {{ cleanup.pollution_report.points }} pts
+                                        </small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        {% if cleanup.assigned_team %}
+                                            {% set team = teams|selectattr("team_id", "equalto", cleanup.assigned_team)|first %}
+                                            {% if team %}
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-users me-1"></i>
+                                                    {{ team.name }}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Team Assigned</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-warning">Unassigned</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewReportDetails('{{ cleanup.report_id }}')">
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </button>
+                                        {% if cleanup.status == 'pending' %}
+                                            <button class="btn btn-sm btn-success" onclick="assignTeam('{{ cleanup.report_id }}')">
+                                                <i class="fas fa-users me-1"></i>Assign Team
+                                            </button>
+                                        {% endif %}
+                                        {% if cleanup.status == 'in_progress' and cleanup.assigned_team %}
+                                            {% set team = teams|selectattr("team_id", "equalto", cleanup.assigned_team)|first %}
+                                            {% if team %}
+                                                {% if team.leader_email == user_email %}
+                                                    <a href="{{ url_for('cleanup.verify_cleanup', report_id=cleanup.report_id) }}" class="btn btn-sm btn-warning me-1">
+                                                        <i class="fas fa-check-circle me-1"></i>Verify Cleanup
+                                                    </a>
+                                                {% elif user_email in team.members %}
+                                                    <a href="{{ url_for('cleanup.verify_cleanup', report_id=cleanup.report_id) }}" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-upload me-1"></i>Submit Verification
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h4>No Cleanup Reports Found</h4>
+                        <p>No cleanup reports match the current filter criteria.</p>
+                        <a href="/cleanup/cleanup-dashboard" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Details Modal -->
+    <div class="modal fade" id="reportDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-clipboard-list me-2"></i>Report Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="reportDetailsContent">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cleanup Verification Modal -->
+    <div class="modal fade" id="cleanupVerificationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-circle me-2"></i>Cleanup Verification
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cleanupVerificationForm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="verification_email" class="form-label">Your Email</label>
+                            <input type="email" class="form-control" id="verification_email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verification_notes" class="form-label">Cleanup Notes</label>
+                            <textarea class="form-control" id="verification_notes" name="notes" rows="3" placeholder="Describe the cleanup work performed..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verification_photos" class="form-label">Upload Cleanup Photos</label>
+                            <input type="file" class="form-control" id="verification_photos" name="verification_photos" multiple accept="image/*" required>
+                            <div class="form-text">Upload photos showing the cleaned area. Multiple photos can be selected.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-upload me-2"></i>Submit Verification
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Team Modal -->
+    <div class="modal fade" id="assignTeamModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-users me-2"></i>Assign Team
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="assignTeamForm" method="post">
+                        <div class="mb-3">
+                            <label for="team_id" class="form-label">Select Team</label>
+                            <select class="form-select" id="team_id" name="team_id" required>
+                                <option value="">Choose a team...</option>
+                                {% for team in teams %}
+                                    {% if team.status == "available" %}
+                                        <option value="{{ team.team_id }}">
+                                            {{ team.name }} ({{ team.leader_email }})
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check me-2"></i>Assign Team
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Modal -->
+    <div class="modal fade image-modal" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">
+                        <i class="fas fa-image me-2"></i>Cleaned Area Photo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="modalImage" src="" alt="Cleaned Area">
+                </div>
+            </div>
+        </div>
+    </div>
+
+         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+     <script>
+        function viewReportDetails(reportId) {
+            // Find the cleanup data for this report
+            const cleanupData = findCleanupData(reportId);
+            if (!cleanupData) {
+                alert('Report data not found');
+                return;
+            }
+
+            const report = cleanupData.pollution_report;
+            const status = cleanupData.status;
+            const assignedTeam = cleanupData.assigned_team;
+            
+            // Get team info if assigned
+            let teamInfo = '';
+            if (assignedTeam) {
+                const team = findTeamData(assignedTeam);
+                if (team) {
+                    teamInfo = `
+                        <div class="report-details-section">
+                            <h6><i class="fas fa-users me-2"></i>Assigned Team</h6>
+                            <div class="detail-row">
+                                <span class="detail-label">Team Name:</span>
+                                <span class="detail-value">${team.name}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Team Leader:</span>
+                                <span class="detail-value">${team.leader_email}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Members:</span>
+                                <span class="detail-value">${team.members ? team.members.join(', ') : 'N/A'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Status:</span>
+                                <span class="detail-value">
+                                    <span class="badge bg-${team.status === 'available' ? 'success' : 'warning'}">
+                                        ${team.status}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Create comprehensive report content
+            const content = `
+                <div class="report-details-section">
+                    <h6><i class="fas fa-image me-2"></i>Pollution Image</h6>
+                    <div class="text-center">
+                        <img src="/static/uploads/${report.filename}" alt="Pollution Report" class="img-fluid rounded" style="max-height: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    </div>
+                </div>
+                
+                <div class="report-details-section">
+                    <h6><i class="fas fa-info-circle me-2"></i>Report Information</h6>
+                    <div class="detail-row">
+                        <span class="detail-label">Location:</span>
+                        <span class="detail-value">${report.location_name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Reporter:</span>
+                        <span class="detail-value">${report.reporter_name} (${report.reporter_email})</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value">${cleanupData.created_at ? cleanupData.created_at.substring(0, 10) : 'N/A'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value">
+                            <span class="status-badge-large status-${status}">${status.replace('_', ' ').toUpperCase()}</span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Pollution Score:</span>
+                        <span class="detail-value">
+                            <span class="badge bg-${report.score < 30 ? 'success' : report.score < 60 ? 'warning' : 'danger'}">
+                                ${report.score}/100
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Points Awarded:</span>
+                        <span class="detail-value">${report.points}</span>
+                    </div>
+                </div>
+                
+                ${teamInfo}
+                
+                ${cleanupData.verification_photos && cleanupData.verification_photos.length > 0 ? `
+                <div class="report-details-section">
+                    <h6><i class="fas fa-check-circle me-2"></i>Cleanup Verification</h6>
+                    <div class="detail-row">
+                        <span class="detail-label">Cleanup Score:</span>
+                        <span class="detail-value">
+                            <span class="badge bg-${cleanupData.cleanup_score < 30 ? 'success' : cleanupData.cleanup_score < 60 ? 'warning' : 'danger'}">
+                                ${cleanupData.cleanup_score ? cleanupData.cleanup_score.toFixed(1) : 'N/A'}/100
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Verification Photos:</span>
+                        <span class="detail-value">${cleanupData.verification_photos.length}</span>
+                    </div>
+                    ${cleanupData.cleanup_notes ? `
+                    <div class="detail-row">
+                        <span class="detail-label">Notes:</span>
+                        <span class="detail-value">${cleanupData.cleanup_notes}</span>
+                    </div>
+                    ` : ''}
+                    ${cleanupData.verification_analysis ? `
+                    <div class="detail-row">
+                        <span class="detail-label">AI Analysis:</span>
+                        <span class="detail-value">
+                            <div class="bg-light p-2 rounded">
+                                ${cleanupData.verification_analysis.map(analysis => 
+                                    `<div class="mb-2"><strong>Score:</strong> ${analysis.score}/100<br>
+                                    <strong>Quality:</strong> ${analysis.cleanup_quality || 'N/A'}<br>
+                                    <strong>Analysis:</strong> ${analysis.analysis || 'N/A'}</div>`
+                                ).join('<hr>')}
+                            </div>
+                        </span>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Cleaned Images Display -->
+                    <div class="mt-3">
+                        <h6 class="mb-2"><i class="fas fa-images me-2"></i>Cleaned Area Photos</h6>
+                        <div class="row">
+                            ${cleanupData.verification_photos.map(photo => `
+                                <div class="col-md-4 mb-2">
+                                    <div class="cleaned-image-container">
+                                        <img src="/static/uploads/${photo}" 
+                                             alt="Cleaned Area" 
+                                             class="img-fluid rounded cleaned-image"
+                                             onclick="openImageModal('/static/uploads/${photo}')"
+                                             style="cursor: pointer;">
+                                        <div class="image-overlay">
+                                            <i class="fas fa-search-plus"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div class="report-details-section">
+                    <h6><i class="fas fa-chart-line me-2"></i>AI Analysis</h6>
+                    <div class="bg-light p-3 rounded">
+                        <p class="mb-0">${report.analysis}</p>
+                    </div>
+                </div>
+                
+                <div class="report-details-section">
+                    <h6><i class="fas fa-map-marker-alt me-2"></i>Location Map</h6>
+                    <div class="map-wrapper">
+                        <div id="map-${reportId}" class="location-map"></div>
+                        <div class="map-overlay">
+                            <div class="map-info">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                <strong>Pollution Location</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-crosshairs me-1"></i>
+                            Coordinates: ${report.latitude}, ${report.longitude}
+                        </span>
+                    </div>
+                </div>
+                
+                ${status === 'in_progress' && assignedTeam ? `
+                <div class="report-details-section">
+                    <div class="text-center">
+                        <a href="/cleanup/verify-cleanup/${reportId}" class="btn btn-warning btn-lg me-2">
+                            <i class="fas fa-check-circle me-2"></i>Verify Cleanup
+                        </a>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('reportDetailsContent').innerHTML = content;
+            
+            const modal = new bootstrap.Modal(document.getElementById('reportDetailsModal'));
+            modal.show();
+            
+            // Initialize map after modal is shown with better timing
+            setTimeout(() => {
+                initializeMap(reportId, parseFloat(report.latitude), parseFloat(report.longitude));
+            }, 300);
+        }
+
+        function showCleanupVerification(reportId) {
+            // Set the form action for verification
+            document.getElementById('cleanupVerificationForm').action = `/cleanup/verify-cleanup/${reportId}`;
+            
+            // Pre-fill email if user is logged in
+            const userEmail = '{{ user_email }}';
+            if (userEmail) {
+                document.getElementById('verification_email').value = userEmail;
+            }
+            
+            // Close the details modal and show verification modal
+            bootstrap.Modal.getInstance(document.getElementById('reportDetailsModal')).hide();
+            
+            const modal = new bootstrap.Modal(document.getElementById('cleanupVerificationModal'));
+            modal.show();
+        }
+
+        function markCompleted(reportId) {
+            if (confirm('Are you sure you want to mark this cleanup as completed? This will free up the team.')) {
+                // Create a form and submit it
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/cleanup/mark-completed/${reportId}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function assignTeam(reportId) {
+            // Set the form action
+            document.getElementById('assignTeamForm').action = `/cleanup/assign-team/${reportId}`;
+            
+            const modal = new bootstrap.Modal(document.getElementById('assignTeamModal'));
+            modal.show();
+        }
+
+        // Helper functions to find data
+        function findCleanupData(reportId) {
+            // Get data from the embedded JSON
+            const cleanupsData = JSON.parse(document.getElementById('cleanupsData').textContent);
+            return cleanupsData.find(c => c.report_id === reportId);
+        }
+
+                 function findTeamData(teamId) {
+             // Get data from the embedded JSON
+             const teamsData = JSON.parse(document.getElementById('teamsData').textContent);
+             return teamsData.find(t => t.team_id === teamId);
+         }
+         
+                   function initializeMap(reportId, lat, lng) {
+              const mapContainer = document.getElementById(`map-${reportId}`);
+              if (!mapContainer) {
+                  console.error(`Map container not found: map-${reportId}`);
+                  return;
+              }
+              
+              // Validate coordinates
+              if (isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) {
+                  mapContainer.innerHTML = `
+                      <div class="alert alert-warning text-center p-4">
+                          <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                          <div>Invalid coordinates</div>
+                          <small class="text-muted">Lat: ${lat}, Lng: ${lng}</small>
+                      </div>
+                  `;
+                  return;
+              }
+              
+              // Ensure Leaflet is loaded
+              if (typeof L === 'undefined') {
+                  console.error('Leaflet not loaded');
+                  mapContainer.innerHTML = `
+                      <div class="alert alert-danger text-center p-4">
+                          <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                          <div>Map library not loaded</div>
+                          <small class="text-muted">Please refresh the page</small>
+                      </div>
+                  `;
+                  return;
+              }
+              
+              try {
+                  // Initialize the map with better zoom and view
+                  const map = L.map(`map-${reportId}`, {
+                      zoomControl: true,
+                      attributionControl: true,
+                      scrollWheelZoom: true,
+                      doubleClickZoom: true,
+                      boxZoom: true,
+                      keyboard: true,
+                      dragging: true,
+                      touchZoom: true,
+                      tap: true
+                  }).setView([lat, lng], 16);
+                  
+                  // Add better map tiles with fallback options
+                  const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                      attribution: '© OpenStreetMap contributors',
+                      maxZoom: 19,
+                      subdomains: 'abc'
+                  });
+                  
+                  tileLayer.addTo(map);
+                  
+                  // Create custom icon for the pollution marker
+                  const pollutionIcon = L.divIcon({
+                      html: '<div class="custom-marker"><i class="fas fa-exclamation-triangle" style="color: white; font-size: 16px; line-height: 30px; text-align: center; display: block;"></i></div>',
+                      className: 'custom-marker',
+                      iconSize: [30, 30],
+                      iconAnchor: [15, 15]
+                  });
+                  
+                  // Add a custom marker for the pollution location
+                  const marker = L.marker([lat, lng], { icon: pollutionIcon }).addTo(map);
+                  
+                  // Enhanced popup with better styling
+                  const popupContent = `
+                      <div style="text-align: center; padding: 10px;">
+                          <div style="font-size: 18px; font-weight: bold; color: #e74c3c; margin-bottom: 5px;">
+                              <i class="fas fa-exclamation-triangle"></i> Pollution Alert
+                          </div>
+                          <div style="font-size: 14px; color: #2c3e50;">
+                              <strong>Location:</strong> Pollution Report Site<br>
+                              <strong>Coordinates:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}
+                          </div>
+                      </div>
+                  `;
+                  
+                  marker.bindPopup(popupContent, {
+                      maxWidth: 300,
+                      className: 'custom-popup'
+                  }).openPopup();
+                  
+                  // Add a better styled circle to show the affected area
+                  const affectedArea = L.circle([lat, lng], {
+                      color: '#e74c3c',
+                      fillColor: '#e74c3c',
+                      fillOpacity: 0.2,
+                      radius: 150,
+                      weight: 3
+                  }).addTo(map);
+                  
+                  // Add a smaller inner circle for emphasis
+                  const innerCircle = L.circle([lat, lng], {
+                      color: '#c0392b',
+                      fillColor: '#c0392b',
+                      fillOpacity: 0.4,
+                      radius: 50,
+                      weight: 2
+                  }).addTo(map);
+                  
+                  // Fit map bounds to show both circles
+                  map.fitBounds(affectedArea.getBounds(), { padding: [20, 20] });
+                  
+                  // Add scale control
+                  L.control.scale({
+                      position: 'bottomright',
+                      metric: true,
+                      imperial: false,
+                      maxWidth: 200
+                  }).addTo(map);
+                  
+                  // Force map refresh after initialization
+                  setTimeout(() => {
+                      map.invalidateSize();
+                  }, 100);
+                  
+                  console.log(`Map initialized successfully for report ${reportId} at ${lat}, ${lng}`);
+                  
+              } catch (error) {
+                  console.error('Error initializing map:', error);
+                  mapContainer.innerHTML = `
+                      <div class="alert alert-danger text-center p-4">
+                          <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                          <div>Error loading map</div>
+                          <small class="text-muted">${error.message}</small>
+                          <br><small class="text-muted">Coordinates: ${lat}, ${lng}</small>
+                      </div>
+                  `;
+              }
+          }
+         
+         function openImageModal(imageSrc) {
+             document.getElementById('modalImage').src = imageSrc;
+             const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+             imageModal.show();
+         }
+     </script>
+</body>
+</html>

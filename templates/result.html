@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Result - Beach Pollution Reporter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .main-container {
+            padding: 6rem 0 2rem 0;
+        }
+        .result-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+        .result-header i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .result-title {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .result-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        .image-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .result-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 400px;
+            object-fit: cover;
+        }
+        .score-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .score-number {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .score-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .severity-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        .severity-low { background: #d4edda; color: #155724; }
+        .severity-moderate { background: #fff3cd; color: #856404; }
+        .severity-high { background: #f8d7da; color: #721c24; }
+        .severity-very-high { background: #f5c6cb; color: #721c24; }
+        .severity-critical { background: #721c24; color: white; }
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+        .info-card h5 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        .info-card h5 i {
+            margin-right: 0.5rem;
+            color: #667eea;
+        }
+        .points-section {
+            background: linear-gradient(45deg, #06d6a0, #1b9aaa);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .points-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .points-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .btn-secondary-custom {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .analysis-text {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e9ecef;
+            font-style: italic;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.landing') }}">
+                <i class="fas fa-leaf me-2"></i>
+                EcoGuardian
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.landing') }}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    {% if user_username %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.dashboard', email=user_email) }}">
+                                <i class="fas fa-chart-line me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.upload_form') }}">
+                                <i class="fas fa-plus me-1"></i>New Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('cleanup.cleanup_dashboard') }}">
+                                <i class="fas fa-broom me-1"></i>Cleanup
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user_username %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>{{ user_username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                    <i class="fas fa-user-cog me-2"></i>Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('cleanup.user_rewards', email=user_email) }}">
+                                    <i class="fas fa-trophy me-2"></i>Rewards
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="result-container">
+                <!-- Result Header -->
+                <div class="result-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h1 class="result-title">Analysis Complete!</h1>
+                    <p class="result-subtitle">Your pollution report has been successfully analyzed and recorded.</p>
+                </div>
+                
+                {% if user_username %}
+                <div class="welcome-message mb-4 text-center">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-user-check me-2"></i>
+                        <strong>Great job, {{ user_username }}!</strong> Your report has been submitted successfully.
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Image Display -->
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename='uploads/' + filename) }}" 
+                         alt="Pollution Report Image" class="result-image">
+                </div>
+
+                <!-- Score Section -->
+                <div class="score-section">
+                    <div class="score-number">{{ score }}/100</div>
+                    <div class="score-label">Pollution Severity Score</div>
+                    <span class="severity-badge severity-{{ 'low' if score < 30 else 'moderate' if score < 50 else 'high' if score < 70 else 'very-high' if score < 90 else 'critical' }}">
+                        {% if score < 30 %}Low Severity
+                        {% elif score < 50 %}Moderate Severity
+                        {% elif score < 70 %}High Severity
+                        {% elif score < 90 %}Very High Severity
+                        {% else %}Critical Severity
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Analysis Text -->
+                <div class="analysis-text">
+                    <i class="fas fa-search me-2"></i>
+                    <strong>AI Analysis:</strong> {{ analysis }}
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-robot me-1"></i>
+                            Powered by: {{ ai_source }}
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Location Information -->
+                <div class="info-card">
+                    <h5><i class="fas fa-map-marker-alt"></i>Location Details</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Latitude:</strong> {{ latitude }}</p>
+                            <p><strong>Longitude:</strong> {{ longitude }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Location Name:</strong> {{ location_name }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Points Section -->
+                <div class="points-section">
+                    <div class="points-number">{{ points }}</div>
+                    <div class="points-label">Points Earned</div>
+                    <p class="mt-2 mb-0">Your contribution helps track and prioritize beach cleanup efforts!</p>
+                </div>
+
+                <!-- Total Points -->
+                <div class="info-card">
+                    <h5><i class="fas fa-trophy"></i>Your Progress</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Points from this report:</strong> {{ points }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Total points so far:</strong> <span class="badge bg-success fs-6">{{ total_points }}</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="btn-container">
+                    {% if user_username %}
+                        <a href="{{ url_for('main.upload_form') }}" class="btn-primary-custom">
+                            <i class="fas fa-plus me-2"></i>
+                            Submit Another Report
+                        </a>
+                        <a href="{{ url_for('main.dashboard', email=user_email) }}" class="btn-secondary-custom">
+                            <i class="fas fa-chart-line me-2"></i>
+                            View Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn-primary-custom">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Login to Submit More Reports
+                        </a>
+                        <a href="{{ url_for('main.landing') }}" class="btn-secondary-custom">
+                            <i class="fas fa-home me-2"></i>
+                            Back to Home
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

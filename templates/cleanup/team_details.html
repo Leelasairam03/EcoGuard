@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Details - Beach Pollution Reporter</title>
+         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .main-container {
+            padding: 2rem 0;
+        }
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .page-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .page-title i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+        .team-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .team-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .team-status-badge {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 1rem 0;
+        }
+        .team-status-available { background: #d4edda; color: #155724; }
+        .team-status-busy { background: #f8d7da; color: #721c24; }
+        .team-status-inactive { background: #e2e3e5; color: #383d41; }
+        .task-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-in_progress { background: #d1ecf1; color: #0c5460; }
+        .status-cleaned { background: #d4edda; color: #155724; }
+        .status-verified { background: #cce5ff; color: #004085; }
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1.2rem;
+        }
+        .member-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .member-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .member-item:last-child {
+            border-bottom: none;
+        }
+        .member-icon {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+        .leader-badge {
+            background: #ffc107;
+            color: #212529;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-water me-2"></i>
+                Beach Pollution Reporter
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/upload">
+                    <i class="fas fa-plus me-1"></i>
+                    New Report
+                </a>
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-chart-line me-1"></i>
+                    Dashboard
+                </a>
+                <a class="nav-link active" href="/cleanup/cleanup-dashboard">
+                    <i class="fas fa-broom me-1"></i>
+                    Cleanup
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="content-card">
+                <h2 class="page-title">
+                    <i class="fas fa-users"></i>
+                    Team Details
+                </h2>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Team Header -->
+                <div class="team-header">
+                    <h3>{{ team.name }}</h3>
+                    <span class="team-status-badge team-status-{{ team.status }}">
+                        {{ team.status.title() }}
+                    </span>
+                    
+                    <div class="team-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ team.total_cleanups }}</span>
+                            <span class="stat-label">Cleanups</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ team.total_points }}</span>
+                            <span class="stat-label">Points</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ "%.1f"|format(team.rating) }}</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Information -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-info-circle me-2"></i>Team Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Leader:</strong> {{ team.leader_email }}</p>
+                                <p><strong>Created:</strong> {{ team.created_at[:10] if team.created_at else 'N/A' }}</p>
+                                <p><strong>Last Activity:</strong> {{ team.last_activity[:10] if team.last_activity else 'N/A' }}</p>
+                                <p><strong>Current Task:</strong> 
+                                    {% if team.current_task %}
+                                        <span class="badge bg-info">{{ team.current_task }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Available</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-star me-2"></i>Performance</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="rating-stars mb-2">
+                                    {% for i in range(5) %}
+                                        {% if i < team.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <h4>{{ "%.1f"|format(team.rating) }}/5.0</h4>
+                                <p class="text-muted">Team Rating</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Members -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-users me-2"></i>Team Members</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="member-list">
+                            {% for member in team.members %}
+                            <div class="member-item">
+                                <div class="member-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <strong>{{ member }}</strong>
+                                    {% if member == team.leader_email %}
+                                        <span class="leader-badge">Leader</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Tasks -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-tasks me-2"></i>Cleanup Tasks</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if cleanups %}
+                            {% for cleanup in cleanups %}
+                            <div class="task-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <h6 class="mb-1">{{ cleanup.pollution_report.location_name }}</h6>
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            {{ cleanup.pollution_report.reporter_name }}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="status-badge status-{{ cleanup.status }}">
+                                            {{ cleanup.status.replace('_', ' ').title() }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <strong>Score:</strong> {{ cleanup.pollution_report.score }}/100
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-star me-1"></i>
+                                            {{ cleanup.pollution_report.points }} pts
+                                        </small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ cleanup.created_at[:10] if cleanup.created_at else 'N/A' }}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <a href="/cleanup/cleanup-reports" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </a>
+                                        {% if cleanup.status == 'in_progress' %}
+                                            {% if team.leader_email == user_email %}
+                                                <a href="{{ url_for('cleanup.verify_cleanup', report_id=cleanup.report_id) }}" class="btn btn-sm btn-warning me-1">
+                                                    <i class="fas fa-check-circle me-1"></i>Verify Cleanup
+                                                </a>
+                                            {% elif user_email in team.members %}
+                                                <a href="{{ url_for('cleanup.verify_cleanup', report_id=cleanup.report_id) }}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-upload me-1"></i>Submit Verification
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-clipboard-list"></i>
+                                <h5>No Tasks Yet</h5>
+                                <p>This team hasn't been assigned any cleanup tasks yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mt-4">
+                    <a href="/cleanup/cleanup-dashboard" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                    <a href="/cleanup/cleanup-reports" class="btn btn-primary">
+                        <i class="fas fa-list me-2"></i>View All Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cleanup Verification Modal -->
+    <div class="modal fade" id="cleanupVerificationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-circle me-2"></i>Cleanup Verification
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cleanupVerificationForm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="verification_email" class="form-label">Your Email</label>
+                            <input type="email" class="form-control" id="verification_email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verification_notes" class="form-label">Cleanup Notes</label>
+                            <textarea class="form-control" id="verification_notes" name="notes" rows="3" placeholder="Describe the cleanup work performed..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verification_photos" class="form-label">Upload Cleanup Photos</label>
+                            <input type="file" class="form-control" id="verification_photos" name="verification_photos" multiple accept="image/*" required>
+                            <div class="form-text">Upload photos showing the cleaned area. Multiple photos can be selected.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-upload me-2"></i>Submit Verification
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+     <script>
+        function showCleanupVerification(reportId) {
+            // Set the form action for verification
+            document.getElementById('cleanupVerificationForm').action = `/cleanup/verify-cleanup/${reportId}`;
+            
+            // Pre-fill email if user is logged in
+            const userEmail = '{{ user_email }}';
+            if (userEmail) {
+                document.getElementById('verification_email').value = userEmail;
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('cleanupVerificationModal'));
+            modal.show();
+        }
+    </script>
+</body>
+</html>

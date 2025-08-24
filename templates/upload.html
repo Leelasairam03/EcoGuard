@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Beach Pollution - Beach Pollution Reporter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .main-container {
+            padding: 6rem 0 2rem 0;
+        }
+        .form-container {
+      background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .form-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .form-title i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-location {
+            background: linear-gradient(45deg, #06d6a0, #1b9aaa);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        .btn-location:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .btn-map {
+            background: linear-gradient(45deg, #118ab2, #073b4c);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        .btn-map:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      color: white;
+        }
+        .btn-reset {
+            background: linear-gradient(45deg, #ef476f, #d62828);
+      border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .btn-submit {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+      border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      color: white;
+    }
+        .map-container {
+      display: none; 
+            margin-top: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+      overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .map-container h5 {
+            background: #f8f9fa;
+            margin: 0;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            color: #2c3e50;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+        .location-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .file-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .file-upload-area:hover {
+            background: #e9ecef;
+            border-color: #5a6fd8;
+        }
+        .file-upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        .file-upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        .coordinate-display {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+        }
+  </style>
+</head>
+<body>
+    <!-- Enhanced Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.landing') }}">
+                <i class="fas fa-leaf me-2"></i>
+                EcoGuardian
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.landing') }}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    {% if user_username %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.dashboard', email=user_email) }}">
+                                <i class="fas fa-chart-line me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ url_for('main.upload_form') }}">
+                                <i class="fas fa-plus me-1"></i>New Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('cleanup.cleanup_dashboard') }}">
+                                <i class="fas fa-broom me-1"></i>Cleanup
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user_username %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>{{ user_username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}">
+                                    <i class="fas fa-user-cog me-2"></i>Profile
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('cleanup.user_rewards', email=user_email) }}">
+                                    <i class="fas fa-trophy me-2"></i>Rewards
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="form-container">
+                {% if user_username %}
+                <div class="welcome-message mb-4 text-center">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-user-check me-2"></i>
+                        <strong>Welcome, {{ user_username }}!</strong> You're logged in and ready to report pollution.
+                    </div>
+                </div>
+                {% endif %}
+                
+                <h2 class="form-title">
+                    <i class="fas fa-camera"></i>
+                    Report Beach Pollution
+                </h2>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <!-- Reporter Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-user me-2"></i>Your Name
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   placeholder="Enter your full name" 
+                                   value="{{ user_username or '' }}" 
+                                   {% if user_username %}readonly{% endif %} required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Your Email
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="Enter your email" 
+                                   value="{{ user_email or '' }}" 
+                                   {% if user_email %}readonly{% endif %} required>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-image me-2"></i>Select Pollution Image
+                        </label>
+                        <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                            <input type="file" id="fileInput" name="file" accept="image/*" 
+                                   style="display: none;" required>
+                            <div class="file-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h5>Click to upload or drag & drop</h5>
+                            <p class="text-muted mb-0">Supports: PNG, JPG, JPEG, GIF, WEBP (Max: 16MB)</p>
+                        </div>
+                        <div id="fileInfo" class="mt-2" style="display: none;"></div>
+                    </div>
+
+                    <!-- Location Selection -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt me-2"></i>Location Selection
+                        </label>
+                        <div class="text-center mb-3">
+                            <button type="button" class="btn-location" onclick="getLocation()">
+                                <i class="fas fa-location-arrow me-2"></i>Get Live Location
+                            </button>
+                            <button type="button" class="btn-map" onclick="openMap()">
+                                <i class="fas fa-map me-2"></i>Pick on Map
+                            </button>
+                            <button type="button" class="btn-reset" onclick="resetLocation()">
+                                <i class="fas fa-undo me-2"></i>Reset
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="latitude" class="form-label">Latitude</label>
+                                <input type="text" class="form-control" id="latitude" name="latitude" 
+                                       readonly placeholder="Click location buttons above">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="longitude" class="form-label">Longitude</label>
+                                <input type="text" class="form-control" id="longitude" name="longitude" 
+                                       readonly placeholder="Click location buttons above">
+                            </div>
+                        </div>
+                        
+                        <div id="locationInfo" class="location-info" style="display: none;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Selected Location:</strong> <span id="locationName">Unknown</span>
+                        </div>
+                    </div>
+
+                    <!-- Map Container -->
+                    <div id="map-container" class="map-container">
+                        <h5><i class="fas fa-map me-2"></i>Selected Location</h5>
+      <div id="map"></div>
+    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            Submit Report & Analyze
+                        </button>
+                    </div>
+  </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let map, marker;
+        let currentFile = null;
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                currentFile = file;
+                displayFileInfo(file);
+            }
+        });
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.file-upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('fileInput').files = files;
+                currentFile = files[0];
+                displayFileInfo(files[0]);
+            }
+        });
+
+        function displayFileInfo(file) {
+            const fileInfo = document.getElementById('fileInfo');
+            const size = (file.size / (1024 * 1024)).toFixed(2);
+            fileInfo.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>${file.name}</strong> selected (${size} MB)
+                </div>
+            `;
+            fileInfo.style.display = 'block';
+        }
+
+        // Map functionality
+    function initMap(lat, lon, zoom=15) {
+      document.getElementById("map-container").style.display = "block";
+
+      if (!map) {
+        map = L.map('map').setView([lat, lon], zoom);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        marker = L.marker([lat, lon], { draggable: true }).addTo(map);
+
+        marker.on('dragend', function() {
+          let pos = marker.getLatLng();
+          setLatLon(pos.lat, pos.lng);
+        });
+
+        map.on("click", function(e) {
+          marker.setLatLng(e.latlng);
+          setLatLon(e.latlng.lat, e.latlng.lng);
+        });
+      } else {
+        map.setView([lat, lon], zoom);
+        marker.setLatLng([lat, lon]);
+      }
+      setLatLon(lat, lon);
+    }
+
+    function setLatLon(lat, lon) {
+      document.getElementById("latitude").value = lat;
+      document.getElementById("longitude").value = lon;
+            
+            // Show location info
+            const locationInfo = document.getElementById('locationInfo');
+            const locationName = document.getElementById('locationName');
+            locationName.textContent = `(${lat}, ${lon})`;
+            locationInfo.style.display = 'block';
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            initMap(pos.coords.latitude, pos.coords.longitude, 16);
+          },
+                    () => {
+                        alert("Unable to fetch live location. Please use the map picker instead.");
+                    }
+        );
+      } else {
+                alert("Geolocation not supported by this browser. Please use the map picker.");
+      }
+    }
+
+    function openMap() {
+      let lat = 12.938463764278055, lon = 74.80391313485335; // Panambur Beach
+      initMap(lat, lon, 13);
+    }
+
+    function resetLocation() {
+      document.getElementById("latitude").value = "";
+      document.getElementById("longitude").value = "";
+            document.getElementById("locationInfo").style.display = "none";
+      if (map) {
+        map.remove();
+        map = null;
+      }
+      document.getElementById("map-container").style.display = "none";
+    }
+
+        // Form validation
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const lat = document.getElementById('latitude').value;
+            const lon = document.getElementById('longitude').value;
+            
+            if (!lat || !lon) {
+                e.preventDefault();
+                alert('Please select a location before submitting.');
+                return false;
+            }
+            
+            if (!currentFile) {
+                e.preventDefault();
+                alert('Please select an image file before submitting.');
+                return false;
+            }
+        });
+  </script>
+</body>
+</html>

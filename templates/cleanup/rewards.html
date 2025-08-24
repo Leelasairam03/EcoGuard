@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Rewards - Beach Pollution Reporter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .main-container {
+            padding: 2rem 0;
+        }
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .page-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .page-title i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+        .user-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .user-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        .level-display {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .level-number {
+            font-size: 3rem;
+            font-weight: bold;
+            display: block;
+        }
+        .progress-bar-custom {
+            height: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 1rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: #06d6a0;
+            transition: width 0.3s ease;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        .badge-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        .badge-card:hover {
+            transform: translateY(-2px);
+        }
+        .badge-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .badge-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+        .badge-info h5 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        .badge-category {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        .rarity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        .rarity-common { background: #e9ecef; color: #495057; }
+        .rarity-uncommon { background: #d4edda; color: #155724; }
+        .rarity-rare { background: #cce5ff; color: #004085; }
+        .rarity-epic { background: #e2d9ff; color: #6f42c1; }
+        .rarity-legendary { background: #ffeaa7; color: #d63031; }
+        .achievement-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #06d6a0;
+        }
+        .achievement-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-water me-2"></i>
+                Beach Pollution Reporter
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/upload">
+                    <i class="fas fa-plus me-1"></i>
+                    New Report
+                </a>
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-chart-line me-1"></i>
+                    Dashboard
+                </a>
+                <a class="nav-link active" href="/cleanup/cleanup-dashboard">
+                    <i class="fas fa-broom me-1"></i>
+                    Cleanup
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="content-card">
+                <h2 class="page-title">
+                    <i class="fas fa-trophy"></i>
+                    Your Rewards & Achievements
+                </h2>
+
+                <!-- User Header -->
+                <div class="user-header">
+                    <h3>{{ user_stats.title }}</h3>
+                    <p class="user-title">{{ user_stats.email }}</p>
+                    
+                    <div class="level-display">
+                        <span class="level-number">Level {{ user_stats.level }}</span>
+                        <p class="mb-2">Progress to next level</p>
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" style="width: {{ (user_stats.progress_to_next * 100)|round }}%"></div>
+                        </div>
+                        <small>{{ user_stats.next_level_points }} points needed for next level</small>
+                    </div>
+                </div>
+
+                <!-- Statistics Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon text-primary">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-number">{{ user_stats.total_points }}</div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon text-success">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="stat-number">{{ user_stats.reporter_points }}</div>
+                        <div class="stat-label">Reporter Points</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon text-info">
+                            <i class="fas fa-broom"></i>
+                        </div>
+                        <div class="stat-number">{{ user_stats.cleanup_points }}</div>
+                        <div class="stat-label">Cleanup Points</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon text-warning">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="stat-number">{{ user_stats.badges|length }}</div>
+                        <div class="stat-label">Badges Earned</div>
+                    </div>
+                </div>
+
+                <!-- Badges Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-medal me-2"></i>Your Badges</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user_stats.badges %}
+                            <div class="row">
+                                {% for badge in user_stats.badges %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="badge-card">
+                                        <div class="badge-header">
+                                            <div class="badge-icon">{{ badge.icon }}</div>
+                                            <div class="badge-info">
+                                                <h5>{{ badge.name }}</h5>
+                                                <div class="badge-category">{{ badge.category.title() }}</div>
+                                            </div>
+                                            <span class="rarity-badge rarity-{{ badge.rarity }}">
+                                                {{ badge.rarity.title() }}
+                                            </span>
+                                        </div>
+                                        <p class="mb-2">{{ badge.description }}</p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-star me-1"></i>
+                                            {{ badge.points_required }} points required
+                                        </small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-medal"></i>
+                                <h5>No Badges Yet</h5>
+                                <p>Start earning badges by submitting reports and completing cleanup tasks!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Achievements Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-trophy me-2"></i>Recent Achievements</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user_stats.achievements %}
+                            {% for achievement in user_stats.achievements[-5:] %}
+                            <div class="achievement-item">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-trophy text-warning me-3 fa-2x"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">
+                                            {% if achievement.type == 'badge_earned' %}
+                                                New Badge{{ 's' if achievement.badges|length > 1 else '' }} Earned!
+                                            {% else %}
+                                                Achievement Unlocked!
+                                            {% endif %}
+                                        </h6>
+                                        <p class="mb-1">
+                                            {% if achievement.type == 'badge_earned' %}
+                                                {% for badge_id in achievement.badges %}
+                                                    {% set badge = user_stats.badges|selectattr("badge_id", "equalto", badge_id)|first %}
+                                                    {% if badge %}
+                                                        <span class="badge bg-primary me-1">{{ badge.name }}</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% else %}
+                                                {{ achievement.description if achievement.description else 'Achievement unlocked!' }}
+                                            {% endif %}
+                                        </p>
+                                        <div class="achievement-date">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ achievement.date[:10] if achievement.date else 'N/A' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-trophy"></i>
+                                <h5>No Achievements Yet</h5>
+                                <p>Complete tasks and earn badges to unlock achievements!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mt-4">
+                    <a href="/cleanup/cleanup-dashboard" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                    <a href="/upload" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Submit New Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

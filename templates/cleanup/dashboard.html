@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleanup Management Dashboard - Beach Pollution Reporter</title>
+         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .main-container {
+            padding: 2rem 0;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stats-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-in_progress { background: #d1ecf1; color: #0c5460; }
+        .status-cleaned { background: #d4edda; color: #155724; }
+        .status-verified { background: #cce5ff; color: #004085; }
+        .team-status-available { background: #d4edda; color: #155724; }
+        .team-status-busy { background: #f8d7da; color: #721c24; }
+        .team-status-inactive { background: #e2e3e5; color: #383d41; }
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .btn-success-custom {
+            background: linear-gradient(45deg, #06d6a0, #1b9aaa);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        .btn-success-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .cleanup-item {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .cleanup-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .team-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 10px;
+            background: #e9ecef;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-water me-2"></i>
+                Beach Pollution Reporter
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/upload">
+                    <i class="fas fa-plus me-1"></i>
+                    New Report
+                </a>
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-chart-line me-1"></i>
+                    Dashboard
+                </a>
+                <a class="nav-link active" href="/cleanup/cleanup-dashboard">
+                    <i class="fas fa-broom me-1"></i>
+                    Cleanup
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="text-white text-center mb-3">
+                        <i class="fas fa-broom me-3"></i>
+                        Cleanup Management Dashboard
+                    </h1>
+                    <p class="text-white text-center opacity-75">
+                        Monitor cleanup progress, manage teams, and track environmental impact
+                    </p>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.total_reports }}</div>
+                        <div class="stats-label">Total Reports</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.pending }}</div>
+                        <div class="stats-label">Pending</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-icon text-info">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.in_progress }}</div>
+                        <div class="stats-label">In Progress</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card text-center">
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.cleaned }}</div>
+                        <div class="stats-label">Cleaned</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="stats-card text-center">
+                        <div class="stats-icon text-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.total_teams }}</div>
+                        <div class="stats-label">Total Teams</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card text-center">
+                        <div class="stats-icon text-success">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.available_teams }}</div>
+                        <div class="stats-label">Available Teams</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card text-center">
+                        <div class="stats-icon text-warning">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="stats-number">{{ stats.busy_teams }}</div>
+                        <div class="stats-label">Busy Teams</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <a href="/cleanup/create-team" class="btn-success-custom">
+                        <i class="fas fa-plus me-2"></i>
+                        Create New Team
+                    </a>
+                    <a href="/cleanup/cleanup-reports" class="btn-primary-custom">
+                        <i class="fas fa-list me-2"></i>
+                        View All Reports
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Cleanup Reports -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="stats-card">
+                        <h3 class="mb-4">
+                            <i class="fas fa-clock me-2"></i>
+                            Recent Cleanup Reports
+                        </h3>
+                        
+                        {% if cleanups %}
+                            {% for cleanup in cleanups[:5] %}
+                            <div class="cleanup-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <h6 class="mb-1">{{ cleanup.pollution_report.location_name }}</h6>
+                                        <small class="text-muted">{{ cleanup.pollution_report.reporter_name }}</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="status-badge status-{{ cleanup.status }}">
+                                            {{ cleanup.status.replace('_', ' ').title() }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <strong>Score:</strong> {{ cleanup.pollution_report.score }}/100
+                                    </div>
+                                    <div class="col-md-2">
+                                        {% if cleanup.assigned_team %}
+                                            <span class="badge bg-info">Team Assigned</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Unassigned</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <a href="/cleanup/cleanup-reports" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View Details
+                                        </a>
+                                        {% if cleanup.status == 'in_progress' and cleanup.assigned_team %}
+                                            {% set team = teams|selectattr("team_id", "equalto", cleanup.assigned_team)|first %}
+                                            {% if team %}
+                                                {% if team.leader_email == user_email %}
+                                                    <a href="{{ url_for('cleanup.verify_cleanup', report_id=cleanup.report_id) }}" class="btn btn-sm btn-warning me-1">
+                                                        <i class="fas fa-check-circle me-1"></i>Verify Cleanup
+                                                    </a>
+                                                {% elif user_email in team.members %}
+                                                    <a href="{{ url_for('cleanup.verify_cleanup', report_id=cleanup.report_id) }}" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-upload me-1"></i>Submit Verification
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <h5>No Cleanup Reports Yet</h5>
+                                <p>Submit pollution reports to start the cleanup process!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Teams -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="stats-card">
+                        <h3 class="mb-4">
+                            <i class="fas fa-users me-2"></i>
+                            Available Teams
+                        </h3>
+                        
+                        {% if teams %}
+                            <div class="row">
+                                {% for team in teams %}
+                                {% if team.status == "available" %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="team-card">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-0">{{ team.name }}</h6>
+                                            <span class="badge team-status-{{ team.status }}">
+                                                {{ team.status.title() }}
+                                            </span>
+                                        </div>
+                                        <p class="text-muted small mb-2">
+                                            <i class="fas fa-user me-1"></i>
+                                            {{ team.leader_email }}
+                                        </p>
+                                        <div class="row text-center mb-2">
+                                            <div class="col-6">
+                                                <small class="text-muted">Cleanups</small>
+                                                <div class="fw-bold">{{ team.total_cleanups }}</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Points</small>
+                                                <div class="fw-bold">{{ team.total_points }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">Rating</small>
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-2">{{ "%.1f"|format(team.rating) }}/5.0</div>
+                                                <div class="text-warning">
+                                                    {% for i in range(5) %}
+                                                        {% if i < team.rating %}
+                                                            <i class="fas fa-star"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="/cleanup/team/{{ team.team_id }}" class="btn btn-sm btn-outline-primary w-100">
+                                            <i class="fas fa-eye me-1"></i>View Team
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-users fa-3x mb-3"></i>
+                                <h5>No Teams Available</h5>
+                                <p>Create cleanup teams to start managing pollution reports!</p>
+                                <a href="/cleanup/create-team" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Create First Team
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cleanup Verification Modal -->
+    <div class="modal fade" id="cleanupVerificationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-circle me-2"></i>Cleanup Verification
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cleanupVerificationForm" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="verification_email" class="form-label">Your Email</label>
+                            <input type="email" class="form-control" id="verification_email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verification_notes" class="form-label">Cleanup Notes</label>
+                            <textarea class="form-control" id="verification_notes" name="notes" rows="3" placeholder="Describe the cleanup work performed..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="verification_photos" class="form-label">Upload Cleanup Photos</label>
+                            <input type="file" class="form-control" id="verification_photos" name="verification_photos" multiple accept="image/*" required>
+                            <div class="form-text">Upload photos showing the cleaned area. Multiple photos can be selected.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-upload me-2"></i>Submit Verification
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+     <script>
+        function showCleanupVerification(reportId) {
+            // Set the form action for verification
+            document.getElementById('cleanupVerificationForm').action = `/cleanup/verify-cleanup/${reportId}`;
+            
+            // Pre-fill email if user is logged in
+            const userEmail = '{{ user_email }}';
+            if (userEmail) {
+                document.getElementById('verification_email').value = userEmail;
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('cleanupVerificationModal'));
+            modal.show();
+        }
+    </script>
+</body>
+</html>

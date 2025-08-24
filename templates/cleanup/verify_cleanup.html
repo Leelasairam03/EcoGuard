@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Cleanup - EcoGuardian</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #f39c12;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--light-color);
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+        }
+        
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        .verification-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--primary-color);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(46, 204, 113, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--secondary-color);
+            background: rgba(46, 204, 113, 0.1);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--accent-color);
+            background: rgba(243, 156, 18, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .file-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--light-color);
+        }
+        
+        .file-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .file-item .remove-file {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .cleanup-info {
+            background: var(--light-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-item i {
+            width: 20px;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--light-color);
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('cleanup.cleanup_dashboard') }}">
+                <i class="fas fa-leaf me-2"></i>EcoGuardian
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ url_for('cleanup.cleanup_dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                </a>
+                <a class="nav-link" href="{{ url_for('main.landing') }}">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="verification-card">
+                        <div class="card-header">
+                            <h3 class="mb-0">
+                                <i class="fas fa-check-circle me-2"></i>Cleanup Verification
+                            </h3>
+                            <p class="mb-0 mt-2">Submit verification photos and notes to complete your cleanup task</p>
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            <!-- Cleanup Task Information -->
+                            <div class="cleanup-info">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Task Details
+                                </h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="info-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span><strong>Location:</strong> {{ cleanup.pollution_report.location_name }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-calendar"></i>
+                                            <span><strong>Assigned:</strong> {{ cleanup.assigned_date.split('T')[0] if cleanup.assigned_date else 'N/A' }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-item">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <span><strong>Severity:</strong> 
+                                                <span class="badge bg-{{ 'danger' if cleanup.pollution_report.score > 70 else 'warning' if cleanup.pollution_report.score > 40 else 'success' }}">
+                                                    {{ cleanup.pollution_report.score }}/100
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-users"></i>
+                                            <span><strong>Team:</strong> {{ cleanup.assigned_team }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Verification Form -->
+                            <form method="POST" action="{{ url_for('cleanup.verify_cleanup', report_id=cleanup.report_id) }}" enctype="multipart/form-data" id="verificationForm">
+                                <div class="mb-4">
+                                    <label for="email" class="form-label fw-semibold">
+                                        <i class="fas fa-envelope me-2"></i>Your Email
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           placeholder="Enter your team member email" required>
+                                    <small class="text-muted">Must be a member of the assigned cleanup team</small>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="notes" class="form-label fw-semibold">
+                                        <i class="fas fa-sticky-note me-2"></i>Cleanup Notes
+                                    </label>
+                                    <textarea class="form-control" id="notes" name="notes" rows="4" 
+                                              placeholder="Describe the cleanup work performed, challenges faced, and any additional details..."></textarea>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-camera me-2"></i>Verification Photos
+                                    </label>
+                                    <div class="upload-area" id="uploadArea">
+                                        <input type="file" id="verificationPhotos" name="verification_photos" 
+                                               multiple accept="image/*" style="display: none;" required>
+                                        <div class="upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <h5 class="fw-bold">Upload Cleanup Photos</h5>
+                                        <p class="text-muted mb-0">
+                                            Drag and drop photos here or click to browse<br>
+                                            <small>Upload multiple photos to show the before and after</small>
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="file-preview" id="filePreview"></div>
+                                    
+                                    <div class="progress-bar mt-3" id="uploadProgress" style="display: none;">
+                                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-submit" id="submitBtn">
+                                        <i class="fas fa-paper-plane me-2"></i>Submit Verification
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('verificationPhotos');
+        const filePreview = document.getElementById('filePreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            filePreview.innerHTML = '';
+            
+            Array.from(files).forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        fileItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="remove-file" onclick="removeFile(${index})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        filePreview.appendChild(fileItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function removeFile(index) {
+            const dt = new DataTransfer();
+            const files = fileInput.files;
+            
+            for (let i = 0; i < files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(files[i]);
+                }
+            }
+            
+            fileInput.files = dt.files;
+            handleFiles(fileInput.files);
+        }
+
+        // Form submission
+        document.getElementById('verificationForm').addEventListener('submit', function(e) {
+            const files = fileInput.files;
+            if (files.length === 0) {
+                e.preventDefault();
+                alert('Please upload at least one verification photo.');
+                return false;
+            }
+            
+            // Show progress
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+            uploadProgress.style.display = 'block';
+            
+            // Simulate progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

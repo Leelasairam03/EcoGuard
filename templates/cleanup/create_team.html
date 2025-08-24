@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Cleanup Team - Beach Pollution Reporter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .main-container {
+            padding: 2rem 0;
+        }
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .form-title {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .form-title i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .btn-secondary-custom {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: white;
+        }
+        .member-input-group {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef;
+        }
+        .member-input-group .form-control {
+            border: 1px solid #dee2e6;
+        }
+        .help-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Modal Styling */
+        .modal-xl {
+            max-width: 90%;
+        }
+        
+        .safety-checklist .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .safety-checklist .form-check-input:disabled {
+            opacity: 0.8;
+        }
+        
+        .card.border-info, .card.border-warning, .card.border-success {
+            transition: transform 0.3s ease;
+        }
+        
+        .card.border-info:hover, .card.border-warning:hover, .card.border-success:hover {
+            transform: translateY(-5px);
+        }
+        
+        .modal-header.bg-success {
+            background: linear-gradient(45deg, #28a745, #20c997) !important;
+        }
+        
+        .modal-footer .btn {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+        }
+        .team-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-water me-2"></i>
+                Beach Pollution Reporter
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/upload">
+                    <i class="fas fa-plus me-1"></i>
+                    New Report
+                </a>
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-chart-line me-1"></i>
+                    Dashboard
+                </a>
+                <a class="nav-link" href="/cleanup/cleanup-dashboard">
+                    <i class="fas fa-broom me-1"></i>
+                    Cleanup
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="form-container">
+                <h2 class="form-title">
+                    <i class="fas fa-users"></i>
+                    Create Cleanup Team
+                </h2>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Team Information -->
+                <div class="team-info">
+                    <h5><i class="fas fa-info-circle me-2"></i>Team Benefits</h5>
+                    <ul class="mb-0">
+                        <li>Earn points for completed cleanup tasks</li>
+                        <li>Build reputation and ratings</li>
+                        <li>Track team performance and achievements</li>
+                        <li>Coordinate cleanup efforts effectively</li>
+                    </ul>
+                </div>
+
+                <form action="/cleanup/create-team" method="post" id="teamForm">
+                    <!-- Team Basic Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-tag me-2"></i>Team Name
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   placeholder="e.g., Coastal Cleaners, Beach Guardians" required>
+                            <div class="help-text">Choose a memorable and descriptive team name</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="leader_email" class="form-label">
+                                <i class="fas fa-crown me-2"></i>Team Leader Email
+                            </label>
+                            <input type="email" class="form-control" id="leader_email" name="leader_email" 
+                                   placeholder="your-email@example.com" required>
+                            <div class="help-text">You will be the team leader and primary contact</div>
+                        </div>
+                    </div>
+
+                    <!-- Team Members -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-users me-2"></i>Team Members
+                        </label>
+                        <div class="help-text mb-3">
+                            Add team member emails individually. The team leader will be automatically included.
+                            <br><small class="text-info">Recommended: 3-6 members for optimal coordination</small>
+                        </div>
+                        
+                        <div id="memberInputs">
+                            <div class="member-input-group">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <input type="email" class="form-control member-email" name="members[]" 
+                                               placeholder="member1@example.com" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-member" style="display: none;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addMember">
+                            <i class="fas fa-plus me-1"></i>Add Another Member
+                        </button>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Current team size: <span id="memberCount">1</span> member(s)
+                            </small>
+                            <div id="teamSizeWarning" class="mt-1" style="display: none;">
+                                <small class="text-warning">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    Large teams may be harder to coordinate
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team Guidelines -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-clipboard-list me-2"></i>Team Guidelines
+                        </label>
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Best Practices:</h6>
+                            <ul class="mb-0">
+                                <li>Keep team size manageable (3-8 members recommended)</li>
+                                <li>Ensure all members are committed to environmental causes</li>
+                                <li>Coordinate cleanup schedules and locations</li>
+                                <li>Document cleanup progress with photos</li>
+                                <li>Follow safety guidelines during cleanup activities</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="/cleanup/cleanup-dashboard" class="btn-secondary-custom w-100">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Back to Dashboard
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn-primary-custom">
+                                <i class="fas fa-save me-2"></i>
+                                Create Team
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Creation Success Modal with Instructions -->
+    <div class="modal fade" id="teamSuccessModal" tabindex="-1" aria-labelledby="teamSuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="teamSuccessModalLabel">
+                        <i class="fas fa-check-circle me-2"></i>Team Created Successfully!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <h6><i class="fas fa-users me-2"></i>Your Team is Ready!</h6>
+                                <p class="mb-0">Congratulations! Your cleanup team has been created and is now ready to take on environmental challenges.</p>
+                            </div>
+                            
+                            <h6 class="text-success mb-3"><i class="fas fa-rocket me-2"></i>Next Steps:</h6>
+                            <ol class="mb-4">
+                                <li>Review safety guidelines with your team</li>
+                                <li>Coordinate cleanup schedules</li>
+                                <li>Check available cleanup tasks</li>
+                                <li>Begin your first cleanup mission!</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3"><i class="fas fa-shield-alt me-2"></i>Essential Safety Measures:</h6>
+                            <div class="safety-checklist">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="safety1" checked disabled>
+                                    <label class="form-check-label" for="safety1">
+                                        <strong>Personal Protective Equipment (PPE)</strong>
+                                    </label>
+                                    <small class="d-block text-muted">Gloves, masks, sturdy footwear, long sleeves</small>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="safety2" checked disabled>
+                                    <label class="form-check-label" for="safety2">
+                                        <strong>First Aid Kit</strong>
+                                    </label>
+                                    <small class="d-block text-muted">Always carry basic medical supplies</small>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="safety3" checked disabled>
+                                    <label class="form-check-label" for="safety3">
+                                        <strong>Communication Plan</strong>
+                                    </label>
+                                    <small class="text-muted">Establish emergency contact procedures</small>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="safety4" checked disabled>
+                                    <label class="form-check-label" for="safety4">
+                                        <strong>Weather Awareness</strong>
+                                    </label>
+                                    <small class="d-block text-muted">Check conditions before starting</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-info mb-3"><i class="fas fa-clipboard-list me-2"></i>Cleanup Best Practices:</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card border-info">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-camera text-info fa-2x mb-2"></i>
+                                            <h6>Document Everything</h6>
+                                            <small class="text-muted">Take before/after photos for verification</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-warning">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-exclamation-triangle text-warning fa-2x mb-2"></i>
+                                            <h6>Hazard Awareness</h6>
+                                            <small class="text-muted">Identify and report dangerous materials</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-success">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-recycle text-success fa-2x mb-2"></i>
+                                            <h6>Proper Disposal</h6>
+                                            <small class="text-muted">Separate recyclables from waste</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-warning mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Important Reminders:</h6>
+                            <div class="alert alert-warning">
+                                <ul class="mb-0">
+                                    <li><strong>Never touch hazardous materials</strong> - Report them immediately</li>
+                                    <li><strong>Stay hydrated</strong> - Take regular breaks during cleanup</li>
+                                    <li><strong>Work in pairs</strong> - Never clean up alone in remote areas</li>
+                                    <li><strong>Respect wildlife</strong> - Avoid disturbing animals and their habitats</li>
+                                    <li><strong>Follow local regulations</strong> - Check disposal requirements</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Close
+                    </button>
+                    <a href="/cleanup/cleanup-dashboard" class="btn btn-success">
+                        <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                    </a>
+                    <a href="/cleanup/cleanup-reports" class="btn btn-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>View Cleanup Tasks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Dynamic member input management
+        document.getElementById('addMember').addEventListener('click', function() {
+            const memberInputs = document.getElementById('memberInputs');
+            const currentMembers = memberInputs.querySelectorAll('.member-input-group').length;
+            
+            // Limit team size to 8 members (including leader)
+            if (currentMembers >= 8) {
+                alert('Maximum team size is 8 members. Please remove some members before adding more.');
+                return;
+            }
+            
+            const newMemberGroup = document.createElement('div');
+            newMemberGroup.className = 'member-input-group';
+            newMemberGroup.innerHTML = `
+                <div class="row">
+                    <div class="col-md-10">
+                        <input type="email" class="form-control member-email" name="members[]" 
+                               placeholder="member@example.com" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-member">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            memberInputs.appendChild(newMemberGroup);
+            
+            // Show remove buttons for all groups
+            updateRemoveButtons();
+        });
+
+        // Remove member input group
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-member')) {
+                e.target.closest('.member-input-group').remove();
+                updateRemoveButtons();
+            }
+        });
+
+        function updateRemoveButtons() {
+            const memberGroups = document.querySelectorAll('.member-input-group');
+            const removeButtons = document.querySelectorAll('.remove-member');
+            
+            // Show remove button only if there's more than one group
+            removeButtons.forEach(button => {
+                button.style.display = memberGroups.length > 1 ? 'block' : 'none';
+            });
+            
+            // Update member count display
+            updateMemberCount();
+        }
+        
+        function updateMemberCount() {
+            const memberCount = document.getElementById('memberCount');
+            const memberGroups = document.querySelectorAll('.member-input-group');
+            const teamSizeWarning = document.getElementById('teamSizeWarning');
+            
+            memberCount.textContent = memberGroups.length;
+            
+            // Show warning for teams with 6+ members
+            if (memberGroups.length >= 6) {
+                teamSizeWarning.style.display = 'block';
+            } else {
+                teamSizeWarning.style.display = 'none';
+            }
+        }
+
+        // Form validation
+        document.getElementById('teamForm').addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+            const leaderEmail = document.getElementById('leader_email').value.trim();
+            const memberInputs = document.querySelectorAll('input[name="members[]"]');
+            
+            if (!name || !leaderEmail) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+                return false;
+            }
+            
+            if (name.length < 3) {
+                e.preventDefault();
+                alert('Team name must be at least 3 characters long.');
+                return false;
+            }
+            
+            // Check if we have at least one member (plus leader)
+            let validMembers = 0;
+            memberInputs.forEach(input => {
+                if (input.value.trim()) {
+                    validMembers++;
+                }
+            });
+            
+            if (validMembers < 1) {
+                e.preventDefault();
+                alert('Please add at least one team member.');
+                return false;
+            }
+            
+            if (validMembers > 8) {
+                e.preventDefault();
+                alert('Maximum team size is 8 members (including leader).');
+                return false;
+            }
+            
+            // Validate email formats
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(leaderEmail)) {
+                e.preventDefault();
+                alert('Please enter a valid leader email address.');
+                return false;
+            }
+            
+            memberInputs.forEach(input => {
+                if (input.value.trim() && !emailRegex.test(input.value.trim())) {
+                    e.preventDefault();
+                    alert('Please enter valid email addresses for all team members.');
+                    return false;
+                }
+            });
+        });
+
+        // Initialize remove buttons
+        updateRemoveButtons();
+        
+        // Check if team was created successfully and show instructions modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                // Show the success modal with instructions
+                const teamSuccessModal = new bootstrap.Modal(document.getElementById('teamSuccessModal'));
+                teamSuccessModal.show();
+                
+                // Clear the success parameter from URL
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        });
+    </script>
+</body>
+</html>
