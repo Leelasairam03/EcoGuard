@@ -6,5 +6,5 @@ SECRET_KEY=your-secret-key-here-change-in-production
 MAX_CONTENT_LENGTH=16777216
 
 # Analysis Settings (for future AI integration)
-GEMINI_API_KEY=AIzaSyDgxiIQR2NMIEp2UaMpdde2uoNT61kA9DM
+GEMINI_API_KEY=yourapi_key_here
 ANALYSIS_CONFIDENCE_THRESHOLD=0.7 
